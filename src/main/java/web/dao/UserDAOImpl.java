@@ -4,7 +4,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import web.models.Role;
 import web.models.User;
 
 import javax.persistence.EntityManager;
@@ -12,7 +18,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import java.sql.SQLOutput;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
@@ -111,5 +119,50 @@ public class UserDAOImpl implements UserDAO {
         entityManager.getTransaction().commit();
         entityManager.close();
         return users;
+    }
+
+    @Transactional
+    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+//        User user = (User) entityManager.createQuery("FROM User where name = " + name).getResultList().get(0);
+        String hql = "select u from User u where u.name = :paramName";
+        Query query = (Query) entityManager.createQuery(hql);
+        query.setParameter("paramName", name);
+        User user = (User)query.list().get(0);
+        entityManager.getTransaction().commit();
+
+//        System.out.println(user);
+
+        if(user==null) {
+            entityManager.close();
+            throw new UsernameNotFoundException(String.format("User '%s' not found", name));
+        } else {
+            entityManager.close();
+            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                    mapRolesToAuth(user.getRoles()));
+        }
+    }
+
+    @Transactional
+    public User getUserByUsername(String name) throws UsernameNotFoundException {
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+//        User user = (User) entityManager.createQuery("FROM User where name = " + name).getResultList().get(0);
+        String hql = "select u from User u where u.name = :paramName";
+        Query query = (Query) entityManager.createQuery(hql);
+        query.setParameter("paramName", name);
+        User user = (User)query.list().get(0);
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return user;
+
+    }
+
+    private Collection<? extends GrantedAuthority> mapRolesToAuth(Collection<Role> roles) {
+        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getRole())).collect(Collectors.toList());
     }
 }

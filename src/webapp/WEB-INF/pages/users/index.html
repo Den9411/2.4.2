@@ -5,7 +5,12 @@
     <title>Users</title>
 </head>
 <body>
+<form th:method="GET" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+<br/>
 
+<h1>Hello Admin!</h1>
 <div>
     <table border="1">
         <tr>
@@ -20,7 +25,7 @@
             <td th:utext="${user.getName()}">...</td>
             <td th:utext="${user.getLastName()}">...</td>
             <td th:utext="${user.getEmail()}">...</td>
-            <td><form th:method="GET" th:action="@{/users/{id}(id=${user.getId()})}">
+            <td><form th:method="GET" th:action="@{/admin/{id}(id=${user.getId()})}">
                 <input type="submit" value="Show"/>
             </form></td>
         </tr>
@@ -29,9 +34,10 @@
 <br/>
 <hr/>
 
-<form th:method="GET" th:action="@{/users/new}">
+<form th:method="GET" th:action="@{/admin/new}">
     <input type="submit" value="Create new user"/>
 </form>
+
 
 </body>
 </html>

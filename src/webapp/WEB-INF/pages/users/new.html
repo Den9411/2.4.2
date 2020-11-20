@@ -5,8 +5,12 @@
     <title>New User</title>
 </head>
 <body>
+<form th:method="GET" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+<br/>
 
-<form th:method="POST" th:action="@{/users}" th:object="${user}">
+<form th:method="POST" th:action="@{/admin}" th:object="${user}">
     <label for="name">Enter name: </label>
     <input type="text" th:field="*{name}" id="name"/>
     <br>

@@ -5,8 +5,12 @@
     <title>Update user</title>
 </head>
 <body>
+<form th:method="GET" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+<br/>
 
-<form th:method="PATCH" th:action="@{/users/{id}(id=${user.getId()})}" th:object="${user}">
+<form th:method="PATCH" th:action="@{/admin/{id}(id=${user.getId()})}" th:object="${user}">
     <label for="name">Enter name: </label>
     <input type="text" th:field="*{name}" id="name"/>
     <br>

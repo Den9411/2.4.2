@@ -5,15 +5,22 @@
     <title></title>
 </head>
 <body>
+<form th:method="GET" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+<br/>
+
 <div>
     <th:block th:each="msg : ${messages}">
         <h1 th:text="${msg}"></h1>
     </th:block>
 </div>
 <hr/>
-<form th:method="GET" th:action="@{/users}">
-    <input type="submit" value="Show CRUD App"/>
+<form th:method="GET" th:action="@{/admin}">
+    <input type="submit" value="Enter"/>
 </form>
+
+
 
 </body>
 </html>
